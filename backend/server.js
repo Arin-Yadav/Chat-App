@@ -25,6 +25,7 @@ app.use(
     credentials: true,
   }),
 );
+
 app.use(express.json());
 
 app.use("/auth", authRoutes);
@@ -39,37 +40,30 @@ mongoose
 
 // Socket.io setup
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  //   socket.on("joinRoom", (roomId) => {
-  //     socket.join(roomId);
-  //     console.log(`User ${socket.id} joined room ${roomId}`);
-  //   });
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
   });
 
-  //   socket.on("sendMessage", (data) => {
-  //     io.to(data.roomId).emit("receiveMessage", data);
-  //   });
   socket.on("sendMessage", async (data) => {
-    const message = new Message({
-      roomId: data.roomId,
-      sender: data.sender,
-      text: data.text,
-    });
-    await message.save();
-    io.to(data.roomId).emit("receiveMessage", message);
+    try {
+      let message = new Message({
+        room: data.roomId, // ✅ correct field
+        sender: data.sender, // ObjectId
+        text: data.text,
+      });
+      await message.save();
+      message = await message.populate("sender", "username");
+
+      // ✅ unified event name
+      io.to(data.roomId).emit("receiveMessage", message);
+    } catch (err) {
+      console.error("Error saving message:", err);
+    }
   });
 
-  socket.on("newMessage", (message) => {
-    // Emit message to all clients in the room
-    io.to(message.roomId).emit("receiveMessage", message);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+  // socket.on("disconnect", () => {
+  //   console.log("User disconnected:", socket.id);
+  // });
 });
 
 app.use((err, req, res, next) => {
@@ -82,3 +76,5 @@ app.use((err, req, res, next) => {
   });
 });
 server.listen(5000, () => console.log("Server running on port 5000"));
+
+export { io, server };

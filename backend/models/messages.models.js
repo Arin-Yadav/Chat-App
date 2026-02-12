@@ -2,11 +2,22 @@ import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema(
   {
-    text: String,
-    sender: String,
-    roomId: String,
+    room: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Room",
+      requried: true,
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
   },
-  { timestamps: true }, // ✅ adds createdAt and updatedAt automatically
+  { timestamps: true },
 );
 
 export default mongoose.model("Message", messageSchema);

@@ -33,7 +33,7 @@ const Dashboard = () => {
         {/* Sidebar */}
         <Sidebar onSelectRoom={setSelectedRoom} />
         {/* Main Content */}
-        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+        <div className="flex-1 flex flex-col overflow-y-auto">
           {!selectedRoom ? (
             <div className="flex flex-col items-center justify-center flex-1">
               <p className="text-gray-600 mb-4">

@@ -123,6 +123,18 @@ const Sidebar = ({ onSelectRoom }) => {
     <div className="w-64 text-gray-800 border-r border-gray-400 p-4 flex flex-col">
       <h2 className="text-xl font-bold mb-4">Rooms</h2>
 
+      {/* Display Rooms */}
+      <ul className="mt-4 space-y-2">
+        {rooms.map((room) => (
+          <li
+            key={room._id}
+            onClick={() => onSelectRoom(room)}
+            className="p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer">
+            {room.roomName}
+          </li>
+        ))}
+      </ul>
+
       {/* Create Room */}
       <form onSubmit={handleSubmit(handleCreateRoom)}>
         <input
@@ -141,18 +153,6 @@ const Sidebar = ({ onSelectRoom }) => {
           Create Room
         </button>
       </form>
-
-      {/* Display Rooms */}
-      <ul className="mt-4 space-y-2">
-        {rooms.map((room) => (
-          <li
-            key={room._id}
-            onClick={() => onSelectRoom(room)}
-            className="p-2 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer">
-            {room.roomName}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
