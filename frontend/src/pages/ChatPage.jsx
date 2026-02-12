@@ -6,34 +6,37 @@ import Navbar from "../components/Layout/Navbar";
 import MessageBubble from "../components/Chat/MessageBubble";
 import { fetchMessages } from "../store/messageSlice";
 import { useDispatch } from "react-redux";
+import { showToast } from "../helpers/ShowToast";
 
-const ChatPage = () => {
-  const { roomId } = useParams();
+const ChatPage = ({ room }) => {
+  // const { roomId } = useParams();
   const dispatch = useDispatch();
-  const username = useSelector((state) => state.auth.user);
+  const fullUser = useSelector((state) => state.user);
+  const user = fullUser?.user?.user;
+  const username = user.username;
 
-  const { byRoom, isLoading, isError, error } = useSelector(
-    (state) => state.messages,
-  );
-  const messages = byRoom[roomId] || [];
+  // const { byRoom, isLoading, isError, error } = useSelector(
+  //   (state) => state.messages,
+  // );
+  // const messages = byRoom[roomId] || [];
 
   const { sendMessage } = useSocket(roomId, username);
   const [text, setText] = useState("");
 
-  useEffect(() => {
-    if (roomId) {
-      dispatch(fetchMessages(roomId));
-    }
-  }, [dispatch, roomId]);
+  // useEffect(() => {
+  //   if (roomId) {
+  //     dispatch(fetchMessages(roomId));
+  //   }
+  // }, [dispatch, roomId]);
 
   const handleSend = () => {
     if (text.trim()) {
       try {
         sendMessage(text);
         setText("");
-        toast.success("Message sent!");
+        showToast("success", "Message sent!");
       } catch {
-        toast.error("Failed to send message");
+        showToast("error", "Failed to send message");
       }
     }
   };
@@ -42,9 +45,7 @@ const ChatPage = () => {
     <div className="flex flex-col h-screen">
       <Navbar />
       <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-        {isLoading && <Spinner />}
-        {isError && <p className="text-red-500">Error: {error}</p>}
-        {!isLoading &&
+        {/* {!isLoading &&
           !isError &&
           Array.isArray(messages) &&
           messages.length === 0 && (
@@ -52,11 +53,9 @@ const ChatPage = () => {
               No messages yet. Start the conversation!
             </p>
           )}
-        {!isLoading &&
-          !isError &&
-          messages.map((msg) => (
-            <MessageBubble key={msg._id} message={msg} currentUser={username} />
-          ))}
+        {messages.map((msg) => (
+          <MessageBubble key={msg._id} message={msg} currentUser={username} />
+        ))} */}
       </div>
       <div className="flex p-2 border-t bg-white">
         <input
