@@ -8,7 +8,7 @@ import { setUser } from "../redux/user/userSlice";
 
 export default function Login() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -23,23 +23,26 @@ export default function Login() {
         data,
         { withCredentials: true },
       );
-      showToast('success', "Login successfully")
-      dispatch(setUser(response.data))
+      showToast("success", "Login successfully");
+      dispatch(setUser(response.data));
       navigate(RouteDashboard);
     } catch (error) {
       showToast(
         "error",
-        error.response?.data?.message ||
-          "Login failed. Please try again.",
+        error.response?.data?.message || "Login failed. Please try again.",
       );
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Login</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-blue-50 to-purple-100 px-4">
+      <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-xl shadow-lg">
+        <h2 className="text-3xl font-extrabold text-center text-blue-600">
+          Welcome Back
+        </h2>
+        <p className="text-center text-gray-600">Please login to continue</p>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -79,11 +82,11 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className="w-full py-2 mt-2 text-white bg-linear-to-r cursor-pointer from-blue-600 to-purple-600 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
             Login
           </button>
 
-          <p className="text-sm text-center text-gray-800">
+          <p className="text-sm text-center text-gray-700">
             Don't have an account?
             <Link to="/register" className="text-blue-600 ml-1 hover:underline">
               Register now

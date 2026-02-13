@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import { fetchRooms, createRoom } from "../store/roomSlice";
 import Navbar from "../components/Layout/Navbar";
 import Sidebar from "../components/Layout/Sidebar";
 import ChatPage from "./ChatPage";

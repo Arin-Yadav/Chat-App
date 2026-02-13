@@ -22,18 +22,54 @@ export default function Register() {
       showToast(
         "error",
         error.response?.data?.message ||
-          "Registeration failed. Please try again.",
+          "Registration failed. Please try again.",
       );
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          Register
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-purple-50 to-blue-100 px-4">
+      <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-xl shadow-lg">
+        <h2 className="text-3xl font-extrabold text-center text-blue-600">
+          Create Account
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <p className="text-center text-gray-600">
+          Join us and start chatting today
+        </p>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // basic email regex
+                  message: "Please enter a valid email address",
+                },
+                minLength: {
+                  value: 5,
+                  message: "Email must be at least 5 characters",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "Email cannot exceed 50 characters",
+                },
+              })}
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
+              placeholder="Enter your email"
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -42,7 +78,7 @@ export default function Register() {
             <input
               type="text"
               {...register("username", { required: "Username is required" })}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Enter your username"
             />
             {errors.username && (
@@ -60,7 +96,7 @@ export default function Register() {
             <input
               type="password"
               {...register("password", { required: "Password is required" })}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Enter your password"
             />
             {errors.password && (
@@ -73,13 +109,13 @@ export default function Register() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className="w-full py-2 mt-2 text-white bg-linear-to-r from-purple-600 to-blue-600 rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
             Register
           </button>
 
-          <p className="text-sm text-center text-gray-800">
+          <p className="text-sm text-center text-gray-700">
             Already have an account?
-            <Link to="/login" className="text-blue-600 hover:underline ml-1">
+            <Link to="/login" className="text-purple-600 ml-1 hover:underline">
               Login now
             </Link>
           </p>
