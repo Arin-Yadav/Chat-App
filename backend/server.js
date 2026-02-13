@@ -61,6 +61,14 @@ io.on("connection", (socket) => {
     }
   });
 
+  // ✅ Typing indicator events
+  socket.on("typing", ({ roomId, username }) => {
+    socket.to(roomId).emit("userTyping", { username });
+  });
+  socket.on("stopTyping", ({ roomId, username }) => {
+    socket.to(roomId).emit("userStopTyping", { username });
+  });
+
   // socket.on("disconnect", () => {
   //   console.log("User disconnected:", socket.id);
   // });

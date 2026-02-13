@@ -6,38 +6,20 @@ import ChatPage from "./ChatPage";
 
 const Dashboard = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
-
-  // useEffect(() => {
-  //   dispatch(fetchRooms());
-  // }, [dispatch]);
-
-  // const handleCreateRoom = async () => {
-  //   if (roomName.trim()) {
-  //     try {
-  //       await dispatch(
-  //         createRoom({ name: roomName, createdBy: username }),
-  //       ).unwrap();
-  //       toast.success("Room created successfully!");
-  //       setRoomName("");
-  //     } catch (err) {
-  //       // console.log(err)
-  //       toast.error("Failed to create room", err);
-  //     }
-  //   }
-  // };
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <Navbar />
+      <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <Sidebar onSelectRoom={setSelectedRoom} />
+        <Sidebar onSelectRoom={setSelectedRoom} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-y-auto">
           {!selectedRoom ? (
             <div className="flex flex-col items-center justify-center flex-1">
               <p className="text-gray-600 mb-4">
-                Select a room from the sidebar to start chatting
+                Create or Join a room to start chatting
               </p>
             </div>
           ) : (

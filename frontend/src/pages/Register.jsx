@@ -74,7 +74,7 @@ export default function Register() {
           <button
             type="submit"
             className="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Login
+            Register
           </button>
 
           <p className="text-sm text-center text-gray-800">

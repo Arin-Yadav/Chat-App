@@ -58,7 +58,13 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-export const useSocket = (roomId, userId, onMessageReceived) => {
+export const useSocket = (
+  roomId,
+  userId,
+  onMessageReceived,
+  onTyping,
+  onStopTyping,
+) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -78,10 +84,20 @@ export const useSocket = (roomId, userId, onMessageReceived) => {
       }
     });
 
+    socket.on("userTyping", ({ username }) => {
+      onTyping?.(username);
+    });
+
+    socket.on("userStopTyping", ({ username }) => {
+      onStopTyping?.(username);
+    });
+
     return () => {
       socket.off("receiveMessage");
+      socket.off("userTyping");
+      socket.off("userStopTyping");
     };
-  }, [roomId, userId, onMessageReceived]);
+  }, [roomId, userId, onMessageReceived, onTyping, onStopTyping]);
 
   useEffect(() => {
     return () => {
@@ -99,5 +115,13 @@ export const useSocket = (roomId, userId, onMessageReceived) => {
     }
   };
 
-  return { sendMessage };
+  const startTyping = (username) => {
+    socketRef.current?.emit("typing", { roomId, username });
+  };
+  
+  const stopTyping = (username) => {
+    socketRef.current?.emit("stopTyping", { roomId, username });
+  };
+
+  return { sendMessage, startTyping, stopTyping };
 };

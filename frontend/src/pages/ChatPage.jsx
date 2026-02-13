@@ -164,14 +164,22 @@ const ChatPage = ({ room }) => {
   const fullUser = useSelector((state) => state.user);
   const user = fullUser?.user?.user;
   const userId = user.id;
+  const username = user.username;
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [typingUsers, setTypingUsers] = useState([]);
 
   // ✅ Use socket with callback
-  const { sendMessage } = useSocket(room._id, userId, (message) => {
-    setMessages((prev) => [...prev, message]);
-  });
+  const { sendMessage, startTyping, stopTyping } = useSocket(
+    room._id,
+    userId,
+    (message) => {
+      setMessages((prev) => [...prev, message]);
+    },
+    (username) => setTypingUsers((prev) => [...new Set([...prev, username])]),
+    (username) => setTypingUsers((prev) => prev.filter((u) => u !== username)),
+  );
 
   // Fetch history when room changes
   useEffect(() => {
@@ -190,18 +198,41 @@ const ChatPage = ({ room }) => {
     if (room?._id) fetchMessages();
   }, [room]);
 
+  const handleInputChange = (e) => {
+    let typingTimeout;
+    const value = e.target.value;
+    setText(value);
+
+    if (value) {
+      startTyping(username);
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => stopTyping(username), 2000); // stop after 2s idle
+    } else {
+      stopTyping(username);
+    }
+  };
+
   const handleSend = (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-
     sendMessage(text); // ✅ socket handles sending
     setText("");
+    stopTyping(username);
   };
 
   return (
     <div className="flex flex-col h-full w-full bg-gray-100">
       <div className="p-4 bg-white border-b flex items-center">
-        <h2 className="font-semibold text-lg">{room.roomName}</h2>
+        <div className="flex flex-col">
+          <h2 className="font-semibold text-sm">Chatting in {room.roomName}</h2>
+          {/* typing indicator */}
+          {typingUsers.length > 0 && (
+            <div className="text-sm text-green-500">
+              {typingUsers.join(", ")} {typingUsers.length > 1 ? "are" : "is"}
+              typing...
+            </div>
+          )}
+        </div>
       </div>
 
       <MessageList messages={messages} userId={userId} />
@@ -212,7 +243,7 @@ const ChatPage = ({ room }) => {
         <input
           type="text"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Type a message"
           className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
