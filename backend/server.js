@@ -1,9 +1,9 @@
 import express from "express";
 import http from "http";
-import { Server } from "socket.io";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import { Server } from "socket.io";
 import authRoutes from "./routes/auth.routes.js";
 import roomRoutes from "./routes/rooms.routes.js";
 import messageRoutes from "./routes/messages.routes.js";
@@ -47,21 +47,21 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (data) => {
     try {
       let message = new Message({
-        room: data.roomId, // ✅ correct field
+        room: data.roomId, // correct field
         sender: data.sender, // ObjectId
         text: data.text,
       });
       await message.save();
       message = await message.populate("sender", "username");
 
-      // ✅ unified event name
+      // unified event name
       io.to(data.roomId).emit("receiveMessage", message);
     } catch (err) {
       console.error("Error saving message:", err);
     }
   });
 
-  // ✅ Typing indicator events
+  // Typing indicator events
   socket.on("typing", ({ roomId, username }) => {
     socket.to(roomId).emit("userTyping", { username });
   });
