@@ -2,6 +2,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { showToast } from "../helpers/ShowToast";
+import { RouteLogin } from "../helpers/RouteName";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -13,12 +14,20 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, data, {
-        withCredentials: true,
-      });
-      showToast("success", "Registered successfully");
-      navigate("/login");
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        data,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (response.data.success) {
+        showToast("success", "Registered successfully");
+        navigate(RouteLogin);
+      }
     } catch (error) {
+      console.log(error);
       showToast(
         "error",
         error.response?.data?.message ||
@@ -28,14 +37,16 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-purple-50 to-blue-100 px-4">
-      <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-xl shadow-lg">
-        <h2 className="text-3xl font-extrabold text-center text-blue-600">
-          Create Account
-        </h2>
-        <p className="text-center text-gray-600">
-          Join us and start chatting today
-        </p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
+        <div className="flex flex-col gap-2 pb-5">
+          <h2 className="text-3xl font-extrabold text-center text-blue-600">
+            Create Account
+          </h2>
+          <p className="text-center text-sm text-gray-600">
+            Join us and start chatting today
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email */}
@@ -60,7 +71,7 @@ export default function Register() {
                   message: "Email cannot exceed 50 characters",
                 },
               })}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
+              className="w-full px-3 py-2 mt-1 outline-none border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -78,7 +89,7 @@ export default function Register() {
             <input
               type="text"
               {...register("username", { required: "Username is required" })}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 mt-1 outline-none border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
               placeholder="Enter your username"
             />
             {errors.username && (
@@ -96,7 +107,7 @@ export default function Register() {
             <input
               type="password"
               {...register("password", { required: "Password is required" })}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 mt-1 outline-none border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
               placeholder="Enter your password"
             />
             {errors.password && (

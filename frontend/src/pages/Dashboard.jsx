@@ -9,10 +9,15 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <Sidebar onSelectRoom={setSelectedRoom} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar
+          onSelectRoom={setSelectedRoom}
+          selectedRoom={selectedRoom}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-y-auto">
           {!selectedRoom ? (

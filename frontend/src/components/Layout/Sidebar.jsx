@@ -4,7 +4,7 @@ import { showToast } from "../../helpers/ShowToast";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 
-const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
+const Sidebar = ({ isOpen, onSelectRoom, onClose, selectedRoom }) => {
   const fullUser = useSelector((state) => state.user);
   const user = fullUser?.user?.user;
   const userId = user?.id;
@@ -19,6 +19,7 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
     formState: { errors },
   } = useForm();
 
+  // Fetch Available Rooms
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -37,6 +38,7 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
     fetchRooms();
   }, []);
 
+  // Create New Room
   const handleCreateRoom = async (data) => {
     try {
       const payload = { roomName: data.roomName, userId };
@@ -67,14 +69,14 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed lg:static top-16 left-0 h-[calc(100vh-64px)] lg:h-auto w-64 bg-linear-to-b from-white to-gray-50 text-gray-800 border-r shadow-sm p-4 flex flex-col transform transition-transform duration-300 z-40
+        className={`fixed lg:static top-16 left-0 h-[calc(100vh-64px)] lg:h-auto w-64 bg-linear-to-b from-white to-gray-50 text-gray-800 border-r border-gray-300 shadow-sm p-4 flex flex-col transform transition-transform duration-300 z-40
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         {/* User Greeting */}
-        <div className="mb-4 pb-2 border-b">
-          <p className="text-sm pt-2 text-gray-600">
+        <div className="mb-4 pb-2 border-b border-gray-300">
+          <p className="text-base pt-2 text-gray-600">
             Hello,
             {
-              <span className="text-lg ml-1 font-semibold text-blue-600">
+              <span className="ml-1 font-semibold text-blue-600">
                 {username}
               </span>
             }
@@ -82,7 +84,7 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
         </div>
 
         {/* Rooms Header */}
-        <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+        <h4 className="text-sm font-semibold text-green-500 uppercase tracking-wide mb-3">
           Available Rooms
         </h4>
 
@@ -96,8 +98,11 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
                   onSelectRoom(room);
                   onClose(); // auto-close on mobile
                 }}
-                className="p-2 rounded-md bg-gray-100 hover:bg-blue-50 hover:text-blue-600 
-                     cursor-pointer transition-colors duration-200">
+                className={`p-2 rounded-md cursor-pointer transition-colors duration-200 ${
+                  selectedRoom?._id === room._id
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "bg-gray-100 hover:bg-blue-50 hover:text-blue-600"
+                }`}>
                 {room.roomName}
               </li>
             ))
@@ -114,7 +119,7 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
           className="mt-4 space-y-2">
           <input
             type="text"
-            placeholder="New room name"
+            placeholder="Create your own room"
             className="w-full p-2 rounded-md border border-gray-300 
                  focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             {...register("roomName", { required: "Room name is required" })}
@@ -126,7 +131,7 @@ const Sidebar = ({ isOpen, onSelectRoom, onClose }) => {
           <button
             type="submit"
             className="w-full bg-linear-to-r from-blue-500 to-indigo-500 
-                 text-white py-2 rounded-md font-medium 
+                 text-white py-2 rounded-md font-medium cursor-pointer 
                  hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
             Create Room
           </button>

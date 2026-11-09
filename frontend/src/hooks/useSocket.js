@@ -1,5 +1,5 @@
 // hooks/useSocket.js
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 export const useSocket = (
@@ -10,6 +10,11 @@ export const useSocket = (
   onStopTyping,
 ) => {
   const socketRef = useRef(null);
+  const callbacksRef = useRef({});
+
+  useEffect(() => {
+    callbacksRef.current = { onMessageReceived, onTyping, onStopTyping };
+  });
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -23,25 +28,26 @@ export const useSocket = (
     }
 
     socket.on("receiveMessage", (message) => {
-      if (onMessageReceived) {
-        onMessageReceived(message); // callback to update local state
-      }
+      callbacksRef.current.onMessageReceived?.(message);
     });
 
     socket.on("userTyping", ({ username }) => {
-      onTyping?.(username);
+      callbacksRef.current.onTyping?.(username);
     });
 
     socket.on("userStopTyping", ({ username }) => {
-      onStopTyping?.(username);
+      callbacksRef.current.onStopTyping?.(username);
     });
 
     return () => {
+      if (roomId) {
+        socket.emit("leaveRoom", roomId);
+      }
       socket.off("receiveMessage");
       socket.off("userTyping");
       socket.off("userStopTyping");
     };
-  }, [roomId, userId, onMessageReceived, onTyping, onStopTyping]);
+  }, [roomId]);
 
   useEffect(() => {
     return () => {
@@ -52,20 +58,33 @@ export const useSocket = (
     };
   }, []);
 
-  const sendMessage = (text) => {
-    if (roomId && userId && socketRef.current) {
-      const msg = { roomId, sender: userId, text };
-      socketRef.current.emit("sendMessage", msg);
-    }
-  };
+  const sendMessage = useCallback(
+    (text) => {
+      if (roomId && userId && socketRef.current) {
+        const msg = { roomId, sender: userId, text };
+        socketRef.current.emit("sendMessage", msg);
+      }
+    },
+    [roomId, userId],
+  );
 
-  const startTyping = (username) => {
-    socketRef.current?.emit("typing", { roomId, username });
-  };
-  
-  const stopTyping = (username) => {
-    socketRef.current?.emit("stopTyping", { roomId, username });
-  };
+  const startTyping = useCallback(
+    (username) => {
+      if (roomId && username) {
+        socketRef.current?.emit("typing", { roomId, username });
+      }
+    },
+    [roomId],
+  );
+
+  const stopTyping = useCallback(
+    (username) => {
+      if (roomId && username) {
+        socketRef.current?.emit("stopTyping", { roomId, username });
+      }
+    },
+    [roomId],
+  );
 
   return { sendMessage, startTyping, stopTyping };
 };
